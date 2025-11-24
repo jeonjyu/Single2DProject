@@ -5,7 +5,7 @@ public class WaitingQueueManager : Singleton<WaitingQueueManager>
 {
     [SerializeField] public static Queue<GameObject> waitingQueue;
 
-    public int Count { get; private set; }
+    public int Count { get => waitingQueue.Count; }
 
     protected override void Awake()
     {
