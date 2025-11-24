@@ -1,31 +1,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IdleState : ICharacterState
+public class StaffIdleState : ICharacterState
 {
     private Transform _transform;
     private Animator _animator;
     private Queue<GameObject> _waitingQueue;
 
-    public IdleState(Transform transform, Queue<GameObject> waitingQueue)
+    public StaffIdleState(Transform transform)
     {
         _transform = transform;
-        _waitingQueue = waitingQueue;
+        //_waitingQueue = waitingQueue;
         _animator = transform.GetComponent<Animator>();
     }
 
     public void Enter()
     {
+        Debug.Log($"[{_transform.gameObject.name}] ´ë±â");
         _animator.SetFloat("floatIdle", 0);
     }
 
     public void Exit()
     {
-        throw new System.NotImplementedException();
     }
 
     public void Update()
     {
-        throw new System.NotImplementedException();
     }
 }
