@@ -15,10 +15,12 @@ public class StoreBalanceManager : Singleton<StoreBalanceManager>
     public void AddBalnce(int addAmount)
     {
         _balance += addAmount;
+        Debug.Log($"[StoreBalanceManager] Balance : {_balance}");
     }
 
     public void SubBalance(int subAmount)
     {
         _balance -= subAmount;
+        Debug.Log($"[StoreBalanceManager] Balance : {_balance}");
     }
 }
