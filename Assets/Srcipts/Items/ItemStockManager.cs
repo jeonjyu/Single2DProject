@@ -3,57 +3,89 @@ using UnityEngine;
 
 public class ItemStockManager : Singleton<ItemStockManager> 
 {
-    //[SerializeField] private List<Item> items;
-    private Dictionary<int, Item> items;
+    [SerializeField] private ItemDatabaseReader _reader;
+    [SerializeField] private ItemObjectSearcher _itemObjectSearcher;
+    private Dictionary<int, ItemData> items;
+    public ItemObject[] itemArr;
+
 
     private int _count;
 
     public int Count { get => _count; set => _count = value; }
 
-    private void Start()
+    protected override void Awake()
     {
-        ItemDatabaseReader reader = gameObject.GetComponent<ItemDatabaseReader>();
-        items = reader.ItemDict;
-        Debug.Log("[ItemStockManager] 리스트 받아옴");
+        _reader = gameObject.GetComponent<ItemDatabaseReader>();
+
+        Debug.Log($"[ItemStockManager | Awake]  _itemObjectSearcher : {_itemObjectSearcher}");
+        items = _reader.ItemDict;
+        _count = items.Count;
+        Debug.Log($"[ItemStockManager | Awake] 리스트 받아옴 {_count}");
     }
 
-    public Item GetItem(int id)
+    private void Start()
     {
-        Item item;
+        itemArr = _itemObjectSearcher.itemObjects;
+        Debug.Log($"[ItemStockManager | Start] 오브젝트 배열 정렬");
+
+    }
+
+    public ItemData GetItem(int id)
+    {
+        ItemData item;
 
         if (!items.TryGetValue(id, out item))
         {
-            Debug.Log("[ItemStockManager] 해당하는 품목이 없음");
+            Debug.LogError("[ItemStockManager] 해당하는 품목이 없음");
         }
-        Debug.Log($"[ItemStockManager] {item}");
+        //Debug.Log($"[ItemStockManager] {item.Name} ");
+        //Debug.Log($"[ItemStockManager] {item.Name} ");
 
         return item;
+    }
+    public GameObject GetItemObject(int id)
+    {
+        Debug.Log($"[ItemStockManager] 타겟 : {id}");
+        GameObject targetObject = itemArr[id - 1].gameObject;
+        Debug.Log($"[ItemStockManager] 타겟 : {targetObject}");
+        foreach(var key in items.Keys)
+        {
+            if (key == id)
+                Debug.Log(key);
+        }
+        return targetObject;
     }
 
     public void AddCount(int id)
     {
-        Item item;
+        ItemData item;
+        Debug.Log($"[ItemStockManager] arr id {id}   ");
         if (items.TryGetValue(id, out item))
         {
             item.Count += 5;
         }
-        Debug.Log($"[ItemStockManager] {id}에 해당하는 값이 존재하지 않음");
+        else
+        {
+            Debug.LogError($"[ItemStockManager] {id}에 해당하는 값이 존재하지 않음");
+        }
     }
 
     public void SubCount(int id)
     {
-        Item item;
+        ItemData item;
         if (items.TryGetValue(id, out item))
         {
-            if(item.Count > 0)
+            if(item.Count <= 0)
             {
-                item.Count -= 1;
+                // 재고 없음 만족도 하락 
+                Debug.Log($"[ItemStockManager] {item.Name} 재고 없음");
+                return;
             }
-            // 재고 없음 만족도 하락 
-            Debug.Log($"[ItemStockManager] {item.Name} 재고 없음");
-
+            item.Count -= 1;
         }
-        Debug.Log($"[ItemStockManager] {id}에 해당하는 값이 존재하지 않음");
+        else
+        {
+            Debug.LogError($"[ItemStockManager] {id}에 해당하는 값이 존재하지 않음");
+        }
     }
-
 }
