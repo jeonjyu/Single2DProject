@@ -4,44 +4,73 @@ using UnityEngine;
 public class CustomerStatePattern : MonoBehaviour
 {
     [SerializeField] private Queue<GameObject> _waitingQueue;
-    private ICharacterState _currentState;
+    [SerializeField] private Customer customer;
+    [SerializeField] private GameObject _counterObj;
+    //[SerializeField] private ItemObject _itemObj;
+    //public ItemObject[] itemArr;
+    private ICustomerState _currentState;
+    private bool _isShopping;
     private bool _isCheckingout;
     private int _itemIdx;
-    private Item _item;
+    private ItemData _itemPropertyValue;
+
+    private Vector2 _counterPos;
+
     public bool IsChecking { get => _isCheckingout; set => _isCheckingout = value; }
     public int ItemIdx { get => _itemIdx; set => _itemIdx = value; }
+    public ItemData ItemValue { get => _itemPropertyValue; set => _itemPropertyValue = value; }
+    //public ItemObject ItemObj { get => _itemObj; set => _itemObj = value; }
 
-    public ICharacterState _shoppingState;
-    public ICharacterState _idleState;
-    public ICharacterState _checkoutState;
-    public ICharacterState _exitState;
+    public ICustomerState _shoppingState;
+    public ICustomerState _waitingState;
+    public ICustomerState _checkoutState;
+    public ICustomerState _exitState;
 
-    System.Random rd = new System.Random();
 
+    private void Awake()
+    {
+        customer = gameObject.GetComponent<Customer>();
+        //_itemObj = gameObject.GetComponent<ItemObject>();
+        Debug.Log($"[CustomerStatePattern | Awake]");
+
+        _shoppingState = new ShoppingState(transform);
+        _waitingState = new WaitingState(transform);
+        _checkoutState = new CheckoutState(transform);
+        _exitState = new ExitState(transform);
+    }
 
     private void Start()
     {
-        _shoppingState = new ShoppingState(transform);
-        _idleState = new CustomerIdleState(transform);
-        _checkoutState = new CheckoutState(transform);
-        _exitState = new ExitState(transform);
-
+        _counterPos = _counterObj.transform.position;
+        Debug.Log($"[CustomerStatePattern | Start]");
         Debug.Log($"[CustomerStatePattern] {gameObject}");
-        SetShoppingList();
-        SetState(_shoppingState);
+        //itemArr = GetComponent<ItemObjectSearcher>().itemObjects;
+        //SetState(_shoppingState);
+        //SetShoppingList();
         
-        GetInLine();
+        //GetInLine();
     }
 
-    public void SetState(ICharacterState newState)
+    private void OnEnable()
+    {
+        Debug.Log($"[CustomerStatePattern | OnEnable]");
+        SetState(_shoppingState);
+        _isShopping = true;
+        SetShoppingList();
+    }
+
+    public void SetState(ICustomerState newState)
     {
         _currentState?.Exit();
         _currentState = newState;
         _currentState.Enter();
     }
 
-    public float delayTime = 7f;
-    private float timer = 0f;
+
+    public void ChangeState()
+    {
+
+    }
 
     void Update()
     {
@@ -50,30 +79,58 @@ public class CustomerStatePattern : MonoBehaviour
         //{
         //    //GetInLine();
         //}
+        if (_isShopping && customer.IsArrived())
+        {
+            TakeItem();
+            _isShopping = false;
+            customer.SetDest(_counterPos);
+        } else if (!_isShopping && customer.IsArrived())
+        {
+            GetInLine();
+        }
     }
 
     public void SetShoppingList()
     {
-        // 값이 안변함
-        // 호출 위치가 잘못 된 듯
-        _itemIdx = Random.Range(1, ItemStockManager.Instance.Count + 1);
-        Debug.Log($"[CustomerStatePattern] {ItemStockManager.Instance.GetItem(_itemIdx)}");
+        _itemIdx = Random.Range(1, ItemStockManager.Instance.Count);
+        Debug.Log($"[CustomerStatePattern] {_itemIdx} / {ItemStockManager.Instance.Count}");
+        _itemPropertyValue = ItemStockManager.Instance.GetItem(_itemIdx);
+        SetTarget();
     }
 
-    public void MoveToTarget()
+    public void SetTarget()
     {
+        GameObject target = ItemStockManager.Instance.GetItemObject(_itemIdx);
+        Debug.Log($"[CustomerStatePattern] 타겟 위치 {target.transform.position}");
+        customer.SetDest(target.transform.position);
+        
+        //_itemObj = 
+        //Vector2 itemPos = _itemObj.GetItemPos(_itemIdx);
+
+        //customer.SetDest(_itemObj.GetItemPos(_itemIdx));
         // _itemIdx로 정해진 대상의 오브젝트 위치를 연결해준다 (어떻게?)
         // 암튼 타겟이 정해지면 이동
+        //if (customer.IsArrived())
+        //{
+        //    _isShopping = false;
+        //    customer.SetDest(_counterPos);
+        //}
+
     }
 
+    public void TakeItem()
+    {
+        ItemStockManager.Instance.SubCount(_itemIdx);
+    }
     public void GetInLine()
     {
+        Debug.Log("[CustomerStatePattern] 계산대 도착");
         WaitingQueueManager.Instance.EnqueueCustomer(gameObject);
-        SetState(_idleState);
+        SetState(_waitingState);
         // 계산 끝날 때까지 기다리는 로직 추가
         // 기다리는 시간 추가(item Count에 초 곱해서 기다리기)
-        _item = ItemStockManager.Instance.GetItem(_itemIdx);
-        StoreBalanceManager.Instance.AddBalnce(_item.Price);
+        _itemPropertyValue = ItemStockManager.Instance.GetItem(_itemIdx);
+        StoreBalanceManager.Instance.AddBalnce(_itemPropertyValue.Price);
         Debug.Log("[CustomerStatePattern] 계산 끝");
         ExitStore();
     }

@@ -4,15 +4,15 @@ using UnityEngine;
 // Staff 상태 변화, 상태에 따른 로직 총괄
 public class StaffStatePattern : MonoBehaviour
 {
-    private ICharacterState _currentState;
+    private IStaffState _currentState;
     private bool _isCheckingout;
-    private int _repeatCount = 5;
+    private int _repeatCount;
 
     public bool IsChecking { get => _isCheckingout; set => _isCheckingout = value; }
     public int RepeatCount { get => _repeatCount; set => _repeatCount = value; }
 
-    public ICharacterState _idleState;
-    public ICharacterState _checkoutState;
+    public IStaffState _idleState;
+    public IStaffState _checkoutState;
 
     private void Awake()
     {
@@ -27,7 +27,7 @@ public class StaffStatePattern : MonoBehaviour
         SetState(_idleState);
     }
 
-    public void SetState(ICharacterState newState)
+    public void SetState(IStaffState newState)
     {
         _currentState?.Exit();
         _currentState = newState;
@@ -36,6 +36,8 @@ public class StaffStatePattern : MonoBehaviour
 
     private void Update()
     {
+        //Debug.Log("[StaffStatePattern] 갱신");
+
         if(!_isCheckingout)
             CheckWaitingQueue();
     }
@@ -44,6 +46,7 @@ public class StaffStatePattern : MonoBehaviour
     // 대기 인원이 있으면 계산 상태로 전환
     public void CheckWaitingQueue()
     {
+        //Debug.Log("[StaffStatePattern] 대기자 체크");
         if (WaitingQueueManager.Instance.Count != 0)
         {
             Debug.Log("[StaffStatePattern] 대기자 등장");
@@ -58,11 +61,12 @@ public class StaffStatePattern : MonoBehaviour
     {
         SetState(_checkoutState);
         _isCheckingout = true;
-
-        for (int i = 0; i < _repeatCount; i++)
-        {
-            Debug.Log("[StaffStatePattern] 계산");
-        }
+        //int price = 400;
+        //for (int i = 0; i < _repeatCount; i++)
+        //{
+        //    Debug.Log("[StaffStatePattern] 계산");
+        //    StoreBalanceManager.Instance.AddBalnce(price);
+        //}
         Debug.Log("[StaffStatePattern] 정산");
         SetState(_idleState);
     }

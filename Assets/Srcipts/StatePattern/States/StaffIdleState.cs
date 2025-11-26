@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StaffIdleState : ICharacterState
+public class StaffIdleState : IStaffState
 {
     private Transform _transform;
     private Animator _animator;
@@ -22,6 +22,11 @@ public class StaffIdleState : ICharacterState
 
     public void Exit()
     {
+    }
+
+    public void StateAction()
+    {
+        throw new System.NotImplementedException();
     }
 
     public void Update()

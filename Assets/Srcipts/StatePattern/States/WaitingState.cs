@@ -1,17 +1,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CustomerIdleState : ICharacterState
+public class WaitingState : ICustomerState
 {
     private Transform _transform;
     private Animator _animator;
     private Queue<GameObject> _waitingQueue;
 
-    public CustomerIdleState(Transform transform)
+    public WaitingState(Transform transform)
     {
         _transform = transform;
         //_waitingQueue = waitingQueue;
         _animator = transform.GetComponent<Animator>();
+    }
+    public void StateAction(CustomerStatePattern statePattern)
+    {
+        throw new System.NotImplementedException();
     }
 
     public void Enter()
@@ -25,15 +29,16 @@ public class CustomerIdleState : ICharacterState
     }
 
 
-    //public float delayTime = 7f;
-    //private float timer = 0f;
-    
+    public float delayTime = 7f;
+    private float timer = 0f;
+
     public void Update()
     {
-        //timer += Time.deltaTime; // 프레임마다 시간을 더함
-        //if (timer >= delayTime)
-        //{
-        //    Exit();
-        //}
+        timer += Time.deltaTime; // 프레임마다 시간을 더함
+        if (timer >= delayTime)
+        {
+            Exit();
+        }
     }
+
 }

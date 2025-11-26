@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ExitState : ICharacterState
+public class ExitState : ICustomerState
 {
     private Transform _transform;
     private Animator _animator;
@@ -20,11 +20,14 @@ public class ExitState : ICharacterState
 
     public void Exit()
     {
-        //throw new System.NotImplementedException();
+    }
+
+    public void StateAction(CustomerStatePattern statePattern)
+    {
+        throw new System.NotImplementedException();
     }
 
     public void Update()
     {
-        //throw new System.NotImplementedException();
     }
 }

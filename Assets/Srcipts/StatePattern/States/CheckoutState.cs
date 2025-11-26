@@ -1,16 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class CheckoutState : ICharacterState
+public class CheckoutState : ICustomerState
 {
     private Transform _transform;
     private Animator _animator;
-    //private Queue<GameObject> _waitingQueue;
 
     public CheckoutState(Transform transform)
     {
         _transform = transform;
-        //_waitingQueue = waitingQueue;
         _animator = transform.GetComponent<Animator>();
     }
 
@@ -21,11 +19,14 @@ public class CheckoutState : ICharacterState
 
     public void Exit()
     {
+    }
+
+    public void StateAction(CustomerStatePattern statePattern)
+    {
         throw new System.NotImplementedException();
     }
 
     public void Update()
     {
-        throw new System.NotImplementedException();
     }
 }
