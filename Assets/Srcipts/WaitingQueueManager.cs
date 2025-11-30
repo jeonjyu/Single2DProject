@@ -10,8 +10,8 @@ public class WaitingQueueManager : Singleton<WaitingQueueManager>
     protected override void Awake()
     {
         waitingQueue = new Queue<GameObject>();
-        Debug.Log($"[WaitingQueueManager] 인스턴스 생성 {Instance}");
-        Debug.Log($"[WaitingQueueManager] 큐 생성 {waitingQueue}");
+        //Debug.Log($"[WaitingQueueManager] 인스턴스 생성 {Instance}");
+        //Debug.Log($"[WaitingQueueManager] 큐 생성 {waitingQueue}");
     }
 
     public void EnqueueCustomer(GameObject gameObject)
@@ -24,6 +24,5 @@ public class WaitingQueueManager : Singleton<WaitingQueueManager>
     {
         Debug.Log("[WaitingQueueManager] 큐에서 제거");
         return waitingQueue.Dequeue();
-
     }
 }

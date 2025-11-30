@@ -3,42 +3,33 @@ using UnityEngine;
 
 public class WaitingState : ICustomerState
 {
-    private Transform _transform;
-    private Animator _animator;
-    private Queue<GameObject> _waitingQueue;
-
-    public WaitingState(Transform transform)
+    public ICustomerState StateAction(CustomerStatePattern csp)
     {
-        _transform = transform;
-        //_waitingQueue = waitingQueue;
-        _animator = transform.GetComponent<Animator>();
-    }
-    public void StateAction(CustomerStatePattern statePattern)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Enter()
-    {
-        Debug.Log($"[{_transform.gameObject.name}] 대기");
-        _animator.SetFloat("floatIdle", 0);
-    }
-
-    public void Exit()
-    {
-    }
-
-
-    public float delayTime = 7f;
-    private float timer = 0f;
-
-    public void Update()
-    {
-        timer += Time.deltaTime; // 프레임마다 시간을 더함
-        if (timer >= delayTime)
+        // 대기열에 추가
+        if (!csp.isWaiting && csp.isArrived)
         {
-            Exit();
+            EnWaitingQueue(csp);
+            return csp.waitingState;
         }
+
+        // 갱신된 위치에 따라 이동하기
+
+        // 순번 확인하기
+        if (csp.isTurn)
+        {
+            Debug.Log($"[WaitingState] 순서가 돌아옴");
+            csp.isWaiting = false;
+            return csp.payState;
+        }
+
+        return csp.waitingState;
     }
 
+    private void EnWaitingQueue(CustomerStatePattern inCsp)
+    {
+        WaitingQueueManager.Instance.EnqueueCustomer(inCsp.gameObject);
+        inCsp.targetObject = inCsp.exit;
+        inCsp.isWaiting = true;
+        inCsp.isArrived = false;
+    }
 }

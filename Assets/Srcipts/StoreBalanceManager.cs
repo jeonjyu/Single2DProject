@@ -9,7 +9,7 @@ public class StoreBalanceManager : Singleton<StoreBalanceManager>
     protected override void Awake()
     {
         _balance += 5000;
-        Debug.Log(_balance);
+        //Debug.Log($"[StoreBalanceManager | Awake] Balance : {_balance}");
     }
 
     public void AddBalnce(int addAmount)

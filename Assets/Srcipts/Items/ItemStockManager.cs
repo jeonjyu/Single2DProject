@@ -43,6 +43,7 @@ public class ItemStockManager : Singleton<ItemStockManager>
 
         return item;
     }
+
     public GameObject GetItemObject(int id)
     {
         Debug.Log($"[ItemStockManager] 타겟 : {id}");
@@ -78,6 +79,7 @@ public class ItemStockManager : Singleton<ItemStockManager>
             if(item.Count <= 0)
             {
                 // 재고 없음 만족도 하락 
+                SatisfactionManager.Instance.SubSatisfaction(5);
                 Debug.Log($"[ItemStockManager] {item.Name} 재고 없음");
                 return;
             }

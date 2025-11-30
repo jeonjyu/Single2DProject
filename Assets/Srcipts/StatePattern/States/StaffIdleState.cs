@@ -3,33 +3,37 @@ using UnityEngine;
 
 public class StaffIdleState : IStaffState
 {
-    private Transform _transform;
-    private Animator _animator;
-    private Queue<GameObject> _waitingQueue;
-
-    public StaffIdleState(Transform transform)
+    public IStaffState StateAction(StaffStatePattern ssp)
     {
-        _transform = transform;
-        //_waitingQueue = waitingQueue;
-        _animator = transform.GetComponent<Animator>();
+        if (WaitingQueueManager.Instance.Count > 0)
+        {
+            ssp.isIdle = false;
+            return ssp.checkoutState;
+        }
+
+        return ssp.idleState;
     }
 
-    public void Enter()
-    {
-        Debug.Log($"[{_transform.gameObject.name}] 대기");
-        _animator.SetFloat("floatIdle", 0);
-    }
 
-    public void Exit()
-    {
-    }
 
-    public void StateAction()
-    {
-        throw new System.NotImplementedException();
-    }
+    //private Transform _transform;
+    //private Animator _animator;
+    //private Queue<GameObject> _waitingQueue;
 
-    public void Update()
-    {
-    }
+    //public StaffIdleState(Transform transform)
+    //{
+    //    _transform = transform;
+    //    //_waitingQueue = waitingQueue;
+    //    _animator = transform.GetComponent<Animator>();
+    //}
+
+    //public void Enter()
+    //{
+    //    Debug.Log($"[{_transform.gameObject.name}] 대기");
+    //    _animator.SetFloat("floatIdle", 0);
+    //}
+
+    //public void Update()
+    //{
+    //}
 }

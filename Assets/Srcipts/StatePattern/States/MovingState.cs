@@ -3,40 +3,68 @@ using UnityEngine;
 public class MovingState : ICustomerState
 { 
 
-    public ICustomerState StateAction(CustomerStatePattern cst)
+    public ICustomerState StateAction(CustomerStatePattern csp)
     {
         // 목적지 설정
-        SetDest(cst);
-
+        if (!csp.isArrived) 
+        {
+            //Debug.Log($"[MovingState] 목적지 설정 {csp.targetObject.name} | {csp.targetObject.transform.position} | {csp.nextPosition}");
+            SetDest(csp);
+        }
         // 경로 탐색 
         // 이동
 
         // 전환 스위치 (불리언 변수) 전환
-        if (EvalutateArrival(cst)) return cst.movingState;
+        if (!EvaluateArrival(csp))
+        {
+            return csp.movingState;
+        }
+        if (EvaluateArrival(csp) && csp.targetObject == csp.exit)
+        {
+            Debug.Log($"[MovingState] 목적지 도착 {csp.targetObject}");
+            if(!csp.isCheckedout)
+                Checkout(csp);
+            return csp.exitState;
+        }
 
-        if (!cst.isShopped) return cst.shoppingState;
-        
-        if (cst.isCheckedout) return cst.exitState;
+        if (csp.isCheckedout) return csp.exitState;
 
-        if (!cst.isTurn) return cst.waitingState;
+        if (!csp.isShopped) return csp.shoppingState;
 
-        return cst.movingState;
+        if (csp.isShopped)
+        {
+            Checkout(csp);
+            return csp.exitState;
+        }
+
+        return csp.movingState;
     }
 
     // 목적지 설정
-    private void SetDest(CustomerStatePattern inCst)
+    private void SetDest(CustomerStatePattern inCsp)
     {
-        inCst.agent.SetDestination(inCst.nextPosition);
+        inCsp.agent.SetDestination(inCsp.nextPosition);
+        Debug.Log($"[MovingState] {inCsp.nextPosition}");
+
+        inCsp.isArrived = false;
     }
 
-    private bool EvalutateArrival(CustomerStatePattern inCst)
+    private bool EvaluateArrival(CustomerStatePattern inCsp)
     {
-        if (inCst.isArrived == false && inCst.agent.remainingDistance < 1f)
+        if (inCsp.agent.velocity.sqrMagnitude < 0.1f && inCsp.agent.remainingDistance < 1f)
         {
-            //Debug.Log("[MovingState] 도착");
-            inCst.isArrived = true;
+            Debug.Log("[MovingState] 도착");
+            inCsp.isArrived = true;
+            inCsp.targetObject = null;
             return true;
         }
         return false;
-    } 
+    }
+    private void Checkout(CustomerStatePattern inCsp)
+    {
+        StoreBalanceManager.Instance.AddBalnce(inCsp.targetData.Price);
+        SatisfactionManager.Instance.AddSatisfaction(5);
+        inCsp.isCheckedout = true;
+        inCsp.isTurn = false;
+    }
 }

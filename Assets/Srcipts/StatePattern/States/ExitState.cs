@@ -2,32 +2,39 @@ using UnityEngine;
 
 public class ExitState : ICustomerState
 {
-    private Transform _transform;
-    private Animator _animator;
-
-    public ExitState(Transform transform)
+    public ICustomerState StateAction(CustomerStatePattern csp)
     {
-        _transform = transform;
-        _animator = transform.GetComponent<Animator>();
+        // 출구로 목적지 설정
+        //if(csp.isCheckedout && csp.targetObject != csp.exit)
+        //{
+        //    SetExitDest(csp);
+        //    return csp.movingState;
+        //}
+        // 이동
+
+        if(csp.isShopped && csp.targetObject != csp.exit)
+        {
+            SetExitDest(csp);
+            return csp.movingState;
+        }
+
+        // 오브젝트 비활성화
+        if (csp.transform.position == csp.exit.transform.position && csp.targetObject == csp.exit)
+        {
+            // 오브젝트 비활성화
+            Debug.Log("[ExitState] 퇴장");
+            csp.transform.gameObject.SetActive(false);
+            return csp.waitingState;
+        }
+        return csp.exitState;
     }
 
-    public void Enter()
+    private void SetExitDest(CustomerStatePattern inCsp)
     {
-        Debug.Log($"[ExitState] {_transform.gameObject.name} 퇴장");
-        _animator.SetFloat("floatIdle", 1);
-        //throw new System.NotImplementedException();
+        Debug.Log("[ExitState] 퇴장하러 가자");
+
+        inCsp.isArrived = false;
+        inCsp.targetObject = inCsp.exit;
     }
 
-    public void Exit()
-    {
-    }
-
-    public void StateAction(CustomerStatePattern statePattern)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Update()
-    {
-    }
 }

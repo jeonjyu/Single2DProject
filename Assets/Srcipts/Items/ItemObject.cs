@@ -1,7 +1,16 @@
+using System;
 using UnityEngine;
+
+[Serializable]
+public class IOProperty
+{
+    public ItemData itemData;
+    public int itemId;
+}
 
 public class ItemObject : MonoBehaviour
 {
+    public IOProperty IOProperty;
     private ItemData _itemProperty;
     [SerializeField] private int _itemID;
 
@@ -9,19 +18,6 @@ public class ItemObject : MonoBehaviour
         
     void Start()
     {
-        Debug.Log("[ItemObject | Start] ");
         _itemProperty = ItemStockManager.Instance.GetItem(ItemID);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public Vector2 GetItemPos()
-    {
-        Debug.Log("[ItemObject] 아이템 위치 리턴");
-        return gameObject.transform.position;
     }
 }

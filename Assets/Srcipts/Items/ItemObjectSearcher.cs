@@ -1,8 +1,15 @@
 using System;
 using UnityEngine;
 
+//[Serializable]
+//public class IOProperty
+//{
+//    public ItemObject[] itemObjects;
+//}
+
 public class ItemObjectSearcher : MonoBehaviour
 {
+    public IOProperty[] ItemObjectsProperties;
     public ItemObject[] itemObjects;
         
     void Start()

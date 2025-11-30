@@ -1,32 +1,25 @@
+using System;
 using UnityEngine;
-using System.Collections.Generic;
 
-public class CheckoutState : ICustomerState
+public class CheckoutState : IStaffState
 {
-    private Transform _transform;
-    private Animator _animator;
-
-    public CheckoutState(Transform transform)
+    public IStaffState StateAction(StaffStatePattern ssp)
     {
-        _transform = transform;
-        _animator = transform.GetComponent<Animator>();
+        // 대기하고 있다가
+        if (!ssp.isIdle)
+        {
+            // 상태 기준 토글
+            EndCheckout(ssp);
+            return ssp.idleState;
+        }
+
+        // 리턴
+        return ssp.checkoutState;
     }
 
-    public void Enter()
+    private void EndCheckout(StaffStatePattern inSsp)
     {
-        _animator.SetFloat("floatIdle", 1);
-    }
-
-    public void Exit()
-    {
-    }
-
-    public void StateAction(CustomerStatePattern statePattern)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Update()
-    {
+        //inSsp.isCheckedout = true;
+        inSsp.isIdle = false;
     }
 }
